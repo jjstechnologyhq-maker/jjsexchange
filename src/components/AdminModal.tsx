@@ -24,17 +24,36 @@ export default function AdminModal({
   const [ngnVal, setNgnVal] = useState(String(ngnPerUsd));
   const [spVal, setSpVal] = useState(String(spread));
 
-  const handleOpen = () => {
+  const handleOpen = async () => {
     setNgnVal(String(ngnPerUsd));
     setSpVal(String(spread));
     setOpen(true);
+    // Check if we already have a valid session cookie
+    try {
+      const res = await fetch("/api/check");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.authenticated) setAuthenticated(true);
+      }
+    } catch {
+      // ignore
+    }
   };
 
-  const handleLogin = () => {
-    if (password === import.meta.env.VITE_ADMIN_PASSWORD) {
-      setAuthenticated(true);
-    } else {
-      alert("Incorrect password");
+  const handleLogin = async () => {
+    try {
+      const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+      if (res.ok) {
+        setAuthenticated(true);
+      } else {
+        alert("Incorrect password");
+      }
+    } catch {
+      alert("Network error logging in");
     }
   };
 

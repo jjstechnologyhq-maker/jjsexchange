@@ -135,9 +135,15 @@ export function useRates() {
       localStorage.setItem('jjsNgnRate', String(newNgn));
       localStorage.setItem('jjsSpread', String(newSpread));
       try {
-        await fetch(`${RATE_API}?ngnPerUsd=${newNgn}&spread=${newSpread}&write=1`, {
+        const res = await fetch("/api/rates", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ngnPerUsd: newNgn, spread: newSpread }),
           signal: AbortSignal.timeout(5000),
         });
+        if (!res.ok) {
+          console.error("Failed to commit rates via secure proxy");
+        }
       } catch {
         /* silent */
       }

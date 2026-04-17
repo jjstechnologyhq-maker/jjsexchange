@@ -2270,4 +2270,7 @@ footer {
   .hero-left {
     top: 7%;
   }
+  .rb-icon {
+    display: none;
+  }
 }
